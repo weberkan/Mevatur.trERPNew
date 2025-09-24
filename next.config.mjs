@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'standalone', // Removed for compatibility
-};
-  output: 'export',
+  // output: 'export', // Disabled for server deployment
   trailingSlash: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -13,6 +11,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
