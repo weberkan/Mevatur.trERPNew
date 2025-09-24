@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export', // Disabled for server deployment
-  trailingSlash: true,
+  // Production için standalone output (Docker optimizasyonu)
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -9,8 +9,20 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
-};
+  // Production optimizasyonları
+  compress: true,
+  poweredByHeader: false,
+  // Experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['@radix-ui/react-icons'],
+  },
+}
 
-export default nextConfig;
+export default nextConfig

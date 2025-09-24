@@ -169,5 +169,3 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 
 **Meva Panel & Muhasebe** - Hac & Umre ERP Sistemi 🕌✨
 
-> 🚀 Coolify ile production deployment yapıldı
-
