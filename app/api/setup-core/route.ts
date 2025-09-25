@@ -36,20 +36,23 @@ export async function GET() {
     `)
     
     await client.query(`
-      -- Participants table
+      -- Participants table (API compatible)
       CREATE TABLE IF NOT EXISTS participants (
           id SERIAL PRIMARY KEY,
           group_id INTEGER,
-          tc_no VARCHAR(11),
           full_name VARCHAR(100) NOT NULL,
           phone VARCHAR(20),
           email VARCHAR(100),
+          id_number VARCHAR(11),
+          passport_no VARCHAR(20),
+          passport_valid_until DATE,
           birth_date DATE,
           gender VARCHAR(10),
-          passport_no VARCHAR(20),
-          passport_expiry DATE,
-          room_preference VARCHAR(50),
-          room_number VARCHAR(10),
+          room_type VARCHAR(50),
+          day_count INTEGER,
+          discount DECIMAL(10,2) DEFAULT 0.00,
+          room_id INTEGER,
+          reference VARCHAR(100),
           total_amount DECIMAL(10,2) DEFAULT 0.00,
           paid_amount DECIMAL(10,2) DEFAULT 0.00,
           remaining_amount DECIMAL(10,2) DEFAULT 0.00,

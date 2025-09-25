@@ -12,62 +12,65 @@ export async function GET() {
   try {
     client = await pool.connect()
     
-    // Complete schema SQL
-    const schemaSQL = `
--- Complete Meva ERP Database Schema
--- For production deployment
-
--- Gruplar tablosu (API compatible)
-CREATE TABLE IF NOT EXISTS groups (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    type VARCHAR(20) DEFAULT 'hac', -- 'Hac', 'Umre', 'Gezi'
-    start_date DATE,
-    end_date DATE,
-    capacity INTEGER DEFAULT 50,
-    currency VARCHAR(3) DEFAULT 'TRY', -- 'TRY', 'USD', 'SAR'
-    fees_by_duration JSONB DEFAULT '{}',
-    notes TEXT,
-    status VARCHAR(20) DEFAULT 'planning', -- 'planning', 'active', 'completed', 'archived', 'cancelled'
-    guide_name VARCHAR(100),
-    guide_phone VARCHAR(20),
-    total_price DECIMAL(12,2) DEFAULT 0.00,
-    created_by INTEGER REFERENCES users(id),
-    company_id INTEGER REFERENCES companies(id),
-    archived_at TIMESTAMP WITH TIME ZONE,
-    archive_path VARCHAR(255),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Katılımcılar tablosu
-CREATE TABLE IF NOT EXISTS participants (
-    id SERIAL PRIMARY KEY,
-    group_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
-    tc_no VARCHAR(11) UNIQUE,
-    full_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20),
-    email VARCHAR(100),
-    emergency_contact VARCHAR(100),
-    emergency_phone VARCHAR(20),
-    birth_date DATE,
-    gender VARCHAR(10), -- 'erkek', 'kadın'
-    passport_no VARCHAR(20),
-    passport_expiry DATE,
-    medical_notes TEXT,
-    room_preference VARCHAR(50), -- 'tekli', 'ikili', 'üçlü', 'dörtlü'
-    room_number VARCHAR(10),
-    total_amount DECIMAL(10,2) DEFAULT 0.00,
-    paid_amount DECIMAL(10,2) DEFAULT 0.00,
-    remaining_amount DECIMAL(10,2) DEFAULT 0.00,
-    status VARCHAR(20) DEFAULT 'registered', -- 'registered', 'confirmed', 'cancelled'
-    registration_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Katılımcı ödemeleri tablosu
-CREATE TABLE IF NOT EXISTS participant_payments (
+    // Execute schema in proper order to handle foreign key constraints
+    
+    // First, create tables without foreign key constraints
+    await client.query(`
+      -- Gruplar tablosu (API compatible)
+      CREATE TABLE IF NOT EXISTS groups (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(100) NOT NULL,
+          type VARCHAR(20) DEFAULT 'hac',
+          start_date DATE,
+          end_date DATE,
+          capacity INTEGER DEFAULT 50,
+          currency VARCHAR(3) DEFAULT 'TRY',
+          fees_by_duration JSONB DEFAULT '{}',
+          notes TEXT,
+          status VARCHAR(20) DEFAULT 'planning',
+          guide_name VARCHAR(100),
+          guide_phone VARCHAR(20),
+          total_price DECIMAL(12,2) DEFAULT 0.00,
+          created_by INTEGER,
+          company_id INTEGER,
+          archived_at TIMESTAMP WITH TIME ZONE,
+          archive_path VARCHAR(255),
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+    
+    await client.query(`
+      -- Katılımcılar tablosu  
+      CREATE TABLE IF NOT EXISTS participants (
+          id SERIAL PRIMARY KEY,
+          group_id INTEGER,
+          tc_no VARCHAR(11) UNIQUE,
+          full_name VARCHAR(100) NOT NULL,
+          phone VARCHAR(20),
+          email VARCHAR(100),
+          emergency_contact VARCHAR(100),
+          emergency_phone VARCHAR(20),
+          birth_date DATE,
+          gender VARCHAR(10),
+          passport_no VARCHAR(20),
+          passport_expiry DATE,
+          medical_notes TEXT,
+          room_preference VARCHAR(50),
+          room_number VARCHAR(10),
+          total_amount DECIMAL(10,2) DEFAULT 0.00,
+          paid_amount DECIMAL(10,2) DEFAULT 0.00,
+          remaining_amount DECIMAL(10,2) DEFAULT 0.00,
+          status VARCHAR(20) DEFAULT 'registered',
+          registration_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+    
+    await client.query(`
+      -- Katılımcı ödemeleri tablosu
+      CREATE TABLE IF NOT EXISTS participant_payments (
     id SERIAL PRIMARY KEY,
     participant_id INTEGER REFERENCES participants(id) ON DELETE CASCADE,
     group_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
