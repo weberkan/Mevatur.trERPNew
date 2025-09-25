@@ -147,34 +147,9 @@ export async function GET() {
       CREATE INDEX IF NOT EXISTS idx_rooms_group_id ON rooms(group_id);
     `)
     
-    // Get table stats
-    const tablesResult = await client.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      ORDER BY table_name
-    `)
-    
-    const tableStats = []
-    for (const table of tablesResult.rows) {
-      try {
-        const countResult = await client.query(`SELECT COUNT(*) FROM ${table.table_name}`)
-        tableStats.push({
-          table_name: table.table_name,
-          record_count: parseInt(countResult.rows[0].count)
-        })
-      } catch (e) {
-        tableStats.push({
-          table_name: table.table_name,
-          record_count: 'error'
-        })
-      }
-    }
-
     return NextResponse.json({
       success: true,
-      message: 'Core database tables created successfully',
-      tables: tableStats
+      message: 'Core database tables created successfully'
     })
 
   } catch (error) {
