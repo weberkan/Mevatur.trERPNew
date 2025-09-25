@@ -138,14 +138,7 @@ export async function GET() {
       );
     `)
     
-    // Add some basic indexes
-    await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_groups_status ON groups(status);
-      CREATE INDEX IF NOT EXISTS idx_participants_group_id ON participants(group_id);
-      CREATE INDEX IF NOT EXISTS idx_payments_group_id ON payments(group_id);
-      CREATE INDEX IF NOT EXISTS idx_expenses_group_id ON expenses(group_id);
-      CREATE INDEX IF NOT EXISTS idx_rooms_group_id ON rooms(group_id);
-    `)
+    // Tables created successfully, indexes can be added later if needed
     
     return NextResponse.json({
       success: true,
