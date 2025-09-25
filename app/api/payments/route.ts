@@ -29,12 +29,10 @@ async function getUserFromToken(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // TEMPORARY: Disable auth for testing
-    // const currentUser = await getUserFromToken(request);
-    // if (!currentUser) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    const currentUser = { id: 1 }; // Fake user for testing
+    const currentUser = await getUserFromToken(request);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const client = await pool.connect();
     const result = await client.query(`
@@ -70,12 +68,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // TEMPORARY: Disable auth for testing
-    // const currentUser = await getUserFromToken(request);
-    // if (!currentUser) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    const currentUser = { id: 1 }; // Fake user for testing
+    const currentUser = await getUserFromToken(request);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const { participantId, date, amount, currency, amountTRY, method, notes } = await request.json();
 
@@ -127,12 +123,10 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // TEMPORARY: Disable auth for testing
-    // const currentUser = await getUserFromToken(request);
-    // if (!currentUser) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    const currentUser = { id: 1 }; // Fake user for testing
+    const currentUser = await getUserFromToken(request);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const { id, participantId, date, amount, currency, amountTRY, method, notes } = await request.json();
 
@@ -191,12 +185,10 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // TEMPORARY: Disable auth for testing
-    // const currentUser = await getUserFromToken(request);
-    // if (!currentUser) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    const currentUser = { id: 1 }; // Fake user for testing
+    const currentUser = await getUserFromToken(request);
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const url = new URL(request.url);
     const paymentId = url.searchParams.get('id');
